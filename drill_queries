@@ -1,0 +1,57 @@
+select * from `dfs`.`sample.json` limit 20;
++-------+-----------+--------+
+| acct  | merchant  | fraud  |
++-------+-----------+--------+
+| 0     | 8629      | 1      |
+| 0     | 5986      | 1      |
+| 0     | 2573      | 1      |
+| 0     | 6163      | 1      |
+| 0     | 2119      | 1      |
+| 0     | 8855      | 1      |
++-------+-----------+--------+
+
+select acct,count(*) from `dfs`.`sample.json`
+  group by acct
+  limit 5;
++-------+---------+
+| acct  | EXPR$1  |
++-------+---------+
+| 0     | 12      |
+| 1     | 12      |
+| 2     | 15      |
+| 3     | 12      |
+| 4     | 6       |
++-------+---------+
+
+#### this query creates the counts, calculates logL then sorts and shows highest results ###
+select MERCH.merchant,
+	MERCH.merchCountFraud as `n11`,
+	MERCH.merchCountNonFraud as `n21`,
+	COUNTS.countFraud as `n1dot`,
+	COUNTS.countNonFraud as `n2dot`,
+  	loglikelihood(cast(MERCH.merchCountFraud as INT),
+		cast(MERCH.merchCountNonFraud as INT),
+		cast(COUNTS.countFraud as INT),
+		cast(COUNTS.countNonFraud as INT)) as `logLike` from (
+	select 1 as `dummy`,merchant,
+	  sum(merchFraud) as `merchCountFraud`,
+	  sum(merchNonFraud) as `merchCountNonFraud` from 
+     	  (select merchant, 
+	  case when fraud='1' then 1 else 0 end as `merchFraud`,
+	  case when fraud='0' then 1 else 0 end as `merchNonFraud`
+	  from `dfs`.`sample.json`
+	)
+group by merchant) `MERCH`
+JOIN ( select 1 as `dummy`, 
+	sum(totalFraud) as `countFraud`, 
+	sum(totalNonFraud) as `countNonFraud` from 
+	( select case when fraud='1' then 1 else 0 end as `totalFraud`,
+	   case when fraud='0' then 1 else 0 end as `totalNonFraud`
+  	   from ( select distinct acct,fraud from `dfs`.`sample.json`)
+)) `COUNTS`
+on MERCH.dummy=COUNTS.dummy
+ORDER by loglike desc
+limit 10
+;
+
+
