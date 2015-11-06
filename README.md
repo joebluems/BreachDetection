@@ -13,7 +13,8 @@ This process makes use of a custome function (the logLikelihood ratio). The basi
 <BR> 3. cp target/*.jar <your drill home>/jars/3rdparty  ## copy the jars to your Drill repository
 
 ## Run the code
-Examples of queries (including the one to calculate the loglikelihodd) you can run against the data are in <b>drill_queries</b>. You will need to give the full path to the file. It should look something like this: `dfs`.`/Users/xyz/BreachDetection/sample.json`.
+Examples of queries (including the one to calculate the loglikelihodd) you can run against the data are in <b>drill_queries</b>. You will need to give the full path to the file. It should look something like this (e.g. on a Mac): `dfs`.`/Users/xyz/BreachDetection/sample.json`. <b> Make sure you use backtick(`) instead of quote(') </b>!
 <BR> 1. cd to your Drill home directory
 <BR> 2. ./bin/drill-embedded  ## start Drill shell
 <BR> 3. At Drill prompt, enter queries from <b>drill_queries</b>
+<BR> 4. If you attended FreeCodeFriday on 11/6/15, you can find the queries here: <b>friday_queries</b>
